@@ -44,25 +44,31 @@ public class User implements UserDetails {
         this.tele = tele;
         this.role = role;
         this.password = password;
-        this.setGrantedAuthorities();
+        this.getAuthorities();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    public void setGrantedAuthorityList(List<SimpleGrantedAuthority> grantedAuthorityList) {
-        this.grantedAuthorityList = grantedAuthorityList;
-    }
-    public void setGrantedAuthorities() {
         if(role != null){
             grantedAuthorityList = new ArrayList<>();
             for(String role : role.toString().split(",")){
                 this.grantedAuthorityList.add(new SimpleGrantedAuthority(role));
             }
         }
+        return grantedAuthorityList;
     }
+
+    public void setGrantedAuthorityList(List<SimpleGrantedAuthority> grantedAuthorityList) {
+        this.grantedAuthorityList = grantedAuthorityList;
+    }
+//    public void setGrantedAuthorities() {
+//        if(role != null){
+//            grantedAuthorityList = new ArrayList<>();
+//            for(String role : role.toString().split(",")){
+//                this.grantedAuthorityList.add(new SimpleGrantedAuthority(role));
+//            }
+//        }
+//    }
 
     @Override
     public String getPassword() {

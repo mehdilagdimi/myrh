@@ -41,8 +41,6 @@ public class AuthController {
             );
 
             final User user = (User) userService.loadUserByUsername(authRequest.getEmail());
-            //set granted authorities based on queried role
-            user.setGrantedAuthorities();
 
             if(user != null){
                 return ResponseEntity.ok(jwtHandler.generateToken(user));

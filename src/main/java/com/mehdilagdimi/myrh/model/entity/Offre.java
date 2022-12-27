@@ -68,4 +68,17 @@ public class Offre {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "agent_id", referencedColumnName = "id")
     Agent agent;
+
+    public Offre(){
+    }
+
+    public Offre(User employer, String title, OfferType offreType, Profile profile, String ville, Education education, Float salary) {
+        this.employer = (Employer) employer;
+        this.title = title;
+        this.offreType = offreType;
+        this.profile = profile;
+        this.ville = ville;
+        this.education = education;
+        this.salary = salary;
+    }
 }

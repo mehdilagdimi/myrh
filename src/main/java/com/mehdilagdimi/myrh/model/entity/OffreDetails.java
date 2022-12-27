@@ -17,4 +17,10 @@ public class OffreDetails {
     Offre offre;
 
     private String description;
+
+    public OffreDetails(){}
+    public OffreDetails(Offre offre, String description) {
+        this.offre = offre;
+        this.description = description;
+    }
 }
