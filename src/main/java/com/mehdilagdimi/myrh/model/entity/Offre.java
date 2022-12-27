@@ -56,4 +56,16 @@ public class Offre {
     @Basic(optional = true)
     private Float salary;
 
+
+    @OneToOne(mappedBy = "offre", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+        @PrimaryKeyJoinColumn
+    OffreDetails offreDetails;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "employer_id", referencedColumnName = "id")
+    Employer employer;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "agent_id", referencedColumnName = "id")
+    Agent agent;
 }

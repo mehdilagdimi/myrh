@@ -1,4 +1,4 @@
-package com.mehdilagdimi.myrh.model;
+package com.mehdilagdimi.myrh.model.entity;
 
 import com.mehdilagdimi.myrh.base.enums.UserRole;
 import jakarta.persistence.*;
@@ -6,12 +6,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
+@Table(name = "users")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="role",
+@DiscriminatorColumn(name="user_role",
         discriminatorType = DiscriminatorType.STRING)
 public class User implements UserDetails {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,15 +24,28 @@ public class User implements UserDetails {
     private String tele;
     private UserRole role;
     private String password;
-    private boolean isEnabled;
-    private boolean isAccountExpired;
-    private boolean isCredentialsExpired;
-    private boolean isLocked;
+    private boolean isEnabled = true;
+    private boolean isAccountExpired = false;
+    private boolean isCredentialsExpired = false;
+    private boolean isLocked = false;
 
     private String photoProfile = null;
 
-
+    @Transient
     private List<SimpleGrantedAuthority> grantedAuthorityList;
+
+    public User(){
+    }
+
+    public User(String email, String username, String adress, String tele, UserRole role, String password) {
+        this.email = email;
+        this.username = username;
+        this.adress = adress;
+        this.tele = tele;
+        this.role = role;
+        this.password = password;
+        this.setGrantedAuthorities();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -40,8 +55,13 @@ public class User implements UserDetails {
     public void setGrantedAuthorityList(List<SimpleGrantedAuthority> grantedAuthorityList) {
         this.grantedAuthorityList = grantedAuthorityList;
     }
-    public void addGrantedAuthority(UserRole userRole) {
-        this.grantedAuthorityList.add(new SimpleGrantedAuthority(userRole.toString()));
+    public void setGrantedAuthorities() {
+        if(role != null){
+            grantedAuthorityList = new ArrayList<>();
+            for(String role : role.toString().split(",")){
+                this.grantedAuthorityList.add(new SimpleGrantedAuthority(role));
+            }
+        }
     }
 
     @Override
@@ -56,22 +76,30 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return isAccountExpired;
+        return !isAccountExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return isLocked;
+        return !isLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return isCredentialsExpired;
+        return !isCredentialsExpired;
     }
 
     @Override
     public boolean isEnabled() {
         return isEnabled;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getAdress() {

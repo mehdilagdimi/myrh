@@ -1,7 +1,7 @@
 package com.mehdilagdimi.myrh.base.enums;
 
 public enum UserRole {
-    AGENT,
-    VISITOR,
-    EMPLOYER
+    ROLE_AGENT,
+    ROLE_VISITOR,
+    ROLE_EMPLOYER
 }

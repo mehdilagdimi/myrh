@@ -1,14 +1,13 @@
 package com.mehdilagdimi.myrh.security;
 
 
-import com.mehdilagdimi.myrh.model.User;
+import com.mehdilagdimi.myrh.model.entity.User;
 import com.mehdilagdimi.myrh.service.UserService;
 import com.mehdilagdimi.myrh.util.JwtHandler;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -33,7 +32,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("AUTHORIZATION");
-        final String userRole;
         final String userEmail;
         final String token;
         final boolean isTokenValid;
@@ -43,20 +41,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        //extract jwt, username and userrole
+        //extract jwt, email and userrole
         token = authHeader.substring(7);
         userEmail = jwtHandler.extractUsername(token);
-        userRole = jwtHandler.extractRole(token);
 
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
             User userDetails = (User)userService.loadUserByUsername(userEmail);
-//            if("AGENT".equals(userRole) ){
-//                System.out.println( "inside jwt filter Agent");
-//                userDetails = agentService.loadUserByEmail(userEmail);
-//            } else if("CLIENT".equals(userRole)){
-//                System.out.println( "inside jwt filter Client");
-//                userDetails = clientService.loadUserByEmail(userEmail);
-//            }
 
             if(userDetails != null){
                 isTokenValid = jwtHandler.validateToken(token, userDetails);

@@ -1,11 +1,10 @@
 package com.mehdilagdimi.myrh.util;
 
 
-import com.mehdilagdimi.myrh.model.User;
+import com.mehdilagdimi.myrh.model.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -16,7 +15,7 @@ import java.util.function.Function;
 @Component
 public class JwtHandler {
     Map<String, Object> claims = new HashMap<>();
-    private String SECRET_KEY = "SPRING_AUTH_JWT_SECRET";
+    private String SECRET_KEY = "AUTH_JWT_SECRET";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -47,18 +46,18 @@ public class JwtHandler {
 
     public String generateToken(User userDetails) {
         claims.put("role", userDetails.getRole().toString());
-        return createToken(claims, userDetails.getUsername());
+        return createToken(claims, userDetails.getEmail());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 3 * 60 * 1000)) //3 mins until expired
+                .setExpiration(new Date(System.currentTimeMillis() + 5 * 60 * 1000)) //5 mins until expired
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
     public Boolean validateToken(String token, User userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getEmail()) && !isTokenExpired(token));
     }
 }

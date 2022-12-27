@@ -1,15 +1,19 @@
 package com.mehdilagdimi.myrh.model.entity;
 
-import com.mehdilagdimi.myrh.model.User;
 import com.mehdilagdimi.myrh.util.UIDGenerator;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
-@DiscriminatorValue("employer")
+@DiscriminatorValue("2")
 public class Employer extends User {
 
     private Long identifier;
+
+    @OneToMany(mappedBy = "employer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Offre> offreList;
+
 
     public Employer(){
         this.identifier = UIDGenerator.getUID();
