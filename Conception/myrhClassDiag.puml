@@ -1,0 +1,79 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class User
+class Agent
+class Visitor
+class Employer
+
+class Offre
+class OffreDetail
+
+
+'Inheritance
+User <|-- Agent
+User <|-- Visitor
+User <|-- Employer
+
+'association
+Agent "1" - "0..*" Offre
+Visitor "0..*" - "1..*" Offre
+
+'Composition
+Offre "0..*" --* "1" Employer
+Offre "1" *-- "1" OffreDetail
+
+class User {
+    String email
+    String username
+    UserRole role
+    String password
+    boolean isEnabled
+    boolean isExpired
+    boolean isLocked
+}
+class Offre{
+    String title
+    OfferType offreType
+    Profile profile
+    String ville
+    Date pubDate
+    Boolean isExpired
+    Float salary
+}
+class OffreDetail{
+    Text description
+}
+
+enum UserRole {
+ROLE_AGENT,
+ROLE_VISITOR,
+ROLE_EMPLOYER
+}
+
+enum OfferType {
+INTERNSHIP
+CDD
+CDI
+}
+enum Education {
+BAC
+BAC+2
+BAC+3
+BAC+5
+BAC+8
+}
+enum Profile {
+WEB_DEVELOPMENT
+SOFTWARE_ENGINEERING
+HUMAN_RESSOURCES
+ELECTRICAL_ENGINEERING
+MECHANICAL_ENGINEERING
+CRM_CONSULTANCY
+SALESFORCE_CONSULTANCY
+ECONOMICS
+BIOMEDICAL_ENGINEERING
+MEDICAL_ASSISTANCE
+}
+
+@enduml
