@@ -1,11 +1,11 @@
 package com.mehdilagdimi.myrh.repository;
 
-import com.mehdilagdimi.myrh.model.entity.OffreDetails;
+import com.mehdilagdimi.myrh.model.entity.OfferDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional(readOnly = true)
-public interface OffreDetailsRepository extends JpaRepository<OffreDetails, Long> {
+public interface OffreDetailsRepository extends JpaRepository<OfferDetails, Long> {
 }

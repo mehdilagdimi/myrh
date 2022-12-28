@@ -9,5 +9,12 @@ import java.util.List;
 public class Agent extends User {
 
     @OneToMany(mappedBy = "agent", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    List<Offre> offreList;
+    List<Offer> offerList;
+
+    public Agent(){
+    }
+
+    public Agent(User parent) {
+        super(parent.getEmail(), parent.getUsername(), parent.getAdress(), parent.getTele(), parent.getRole(), parent.getPassword());
+    }
 }

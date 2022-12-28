@@ -1,5 +1,8 @@
 package com.mehdilagdimi.myrh.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mehdilagdimi.myrh.base.enums.Education;
 import com.mehdilagdimi.myrh.base.enums.OfferType;
 import com.mehdilagdimi.myrh.base.enums.Profile;
@@ -7,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.Instant;
 
@@ -14,7 +18,7 @@ import java.time.Instant;
 @Entity
 @Getter
 @Setter
-public class Offre {
+public class Offer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -57,10 +61,12 @@ public class Offre {
     private Float salary;
 
 
-    @OneToOne(mappedBy = "offre", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToOne(mappedBy = "offer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
         @PrimaryKeyJoinColumn
-    OffreDetails offreDetails;
+    OfferDetails offerDetails;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     Employer employer;
@@ -69,11 +75,10 @@ public class Offre {
     @JoinColumn(name = "agent_id", referencedColumnName = "id")
     Agent agent;
 
-    public Offre(){
+    public Offer(){
     }
 
-    public Offre(User employer, String title, OfferType offreType, Profile profile, String ville, Education education, Float salary) {
-        this.employer = (Employer) employer;
+    public Offer(String title, OfferType offreType, Profile profile, String ville, Education education, Float salary) {
         this.title = title;
         this.offreType = offreType;
         this.profile = profile;
@@ -81,4 +86,19 @@ public class Offre {
         this.education = education;
         this.salary = salary;
     }
+    public Offer(Employer employer, String title, OfferType offreType, Profile profile, String ville, Education education, Float salary) {
+        this.employer = employer;
+        this.title = title;
+        this.offreType = offreType;
+        this.profile = profile;
+        this.ville = ville;
+        this.education = education;
+        this.salary = salary;
+    }
+
+
+    //    @JsonManagedReference
+//    public Offer getOffer(){
+//        return this;
+//    }
 }

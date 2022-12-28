@@ -1,5 +1,6 @@
 package com.mehdilagdimi.myrh.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mehdilagdimi.myrh.base.enums.UserRole;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,6 +24,8 @@ public class User implements UserDetails {
     private String adress;
     private String tele;
     private UserRole role;
+
+    @JsonIgnore
     private String password;
     private boolean isEnabled = true;
     private boolean isAccountExpired = false;
@@ -69,6 +72,15 @@ public class User implements UserDetails {
 //            }
 //        }
 //    }
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     @Override
     public String getPassword() {

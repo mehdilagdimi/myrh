@@ -2,7 +2,11 @@ package com.mehdilagdimi.myrh.service;
 
 import com.mehdilagdimi.myrh.base.exception.UserAlreadyExistAuthenticationException;
 import com.mehdilagdimi.myrh.model.SignupRequest;
+import com.mehdilagdimi.myrh.model.entity.Agent;
+import com.mehdilagdimi.myrh.model.entity.Employer;
 import com.mehdilagdimi.myrh.model.entity.User;
+import com.mehdilagdimi.myrh.repository.AgentRepository;
+import com.mehdilagdimi.myrh.repository.EmployerRepository;
 import com.mehdilagdimi.myrh.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +20,10 @@ public class UserService implements UserDetailsService{
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    EmployerRepository employerRepository;
+    @Autowired
+    AgentRepository agentRepository;
 
 
     @Autowired
@@ -36,7 +44,14 @@ public class UserService implements UserDetailsService{
                 passwordEncoder.encode(signupReq.getPassword())
         );
 
-        userRepository.save(user);
+        switch (user.getRole().toString()){
+            case "ROLE_EMPLOYER":
+                employerRepository.save(new Employer(user));
+                break;
+            case "ROLE_AGENT":
+                agentRepository.save(new Agent(user));
+                break;
+        }
         return user;
     }
 }

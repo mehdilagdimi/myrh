@@ -2,9 +2,11 @@ package com.mehdilagdimi.myrh.service;
 
 
 import com.mehdilagdimi.myrh.model.OfferRequest;
-import com.mehdilagdimi.myrh.model.entity.Offre;
-import com.mehdilagdimi.myrh.model.entity.OffreDetails;
+import com.mehdilagdimi.myrh.model.entity.Employer;
+import com.mehdilagdimi.myrh.model.entity.Offer;
+import com.mehdilagdimi.myrh.model.entity.OfferDetails;
 import com.mehdilagdimi.myrh.model.entity.User;
+import com.mehdilagdimi.myrh.repository.EmployerRepository;
 import com.mehdilagdimi.myrh.repository.OffreDetailsRepository;
 import com.mehdilagdimi.myrh.repository.OffreRepository;
 import jakarta.persistence.PersistenceException;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -25,28 +28,33 @@ public class OffreService{
     OffreRepository offreRepository;
 
     @Autowired
+    EmployerRepository employerRepository;
+
+    @Autowired
     OffreDetailsRepository offreDetailsRepository;
 
-    public Page<Offre> getOffresPaginated(int maxItems, int requestedPage) throws EmptyResultDataAccessException{
+    public Page<Offer> getOffresPaginated(int maxItems, int requestedPage) throws EmptyResultDataAccessException{
         Pageable pageableOffres = PageRequest.of(
                 requestedPage, maxItems,
                 Sort.by("publicationDate").descending().and(Sort.by("isExpired"))
         );
 
-        Page<Offre> offres = offreRepository.findAll(pageableOffres);
+        Page<Offer> offers = offreRepository.findAll(pageableOffres);
 
-        if(offres.isEmpty()) throw new EmptyResultDataAccessException("List of offre records is empty", maxItems);
-        return offres;
+        if(offers.isEmpty()) throw new EmptyResultDataAccessException("List of offre records is empty", maxItems);
+        return offers;
     }
 
-    public Offre getOffreById(Long id){
+    public Offer getOffreById(Long id){
         return offreRepository.findById(id).
                 orElseThrow(() -> new NoSuchElementException());
     }
 
-    public Offre saveOffre(User employer, OfferRequest req) throws PersistenceException{
-        Offre offre = new Offre(
-                employer,
+    public Offer saveOffre(User principal, OfferRequest req) throws PersistenceException, UsernameNotFoundException {
+        Employer employer = employerRepository.findById(principal.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found......"));
+
+        Offer offer = new Offer(
                 req.getTitle(),
                 req.getOfferType(),
                 req.getProfile(),
@@ -54,15 +62,14 @@ public class OffreService{
                 req.getEducation(),
                 req.getSalary()
         );
-        System.out.println(" inside save offer 1");
-        OffreDetails offreDetails = new OffreDetails(offre, req.getDescription());
-        offre.setOffreDetails(offreDetails);
+        employer.addOffer(offer);
 
-        offre = offreRepository.save(offre);
-        System.out.println(" inside save offer 2");
-        if(offre == null) throw new PersistenceException();
-        System.out.println(" inside save offer after throwing mentioned");
-        return offre;
+        OfferDetails offerDetails = new OfferDetails(offer, req.getDescription());
+        offer.setOfferDetails(offerDetails);
+
+        offer = offreRepository.save(offer);
+        if(offer == null) throw new PersistenceException();
+        return offer;
     }
 
 

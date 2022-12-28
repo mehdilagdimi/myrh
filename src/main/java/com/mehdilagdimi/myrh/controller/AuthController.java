@@ -2,9 +2,12 @@ package com.mehdilagdimi.myrh.controller;
 
 
 
+import com.mehdilagdimi.myrh.base.enums.UserRole;
 import com.mehdilagdimi.myrh.base.exception.UserAlreadyExistAuthenticationException;
 import com.mehdilagdimi.myrh.model.AuthenticationRequest;
 import com.mehdilagdimi.myrh.model.SignupRequest;
+import com.mehdilagdimi.myrh.model.entity.Agent;
+import com.mehdilagdimi.myrh.model.entity.Employer;
 import com.mehdilagdimi.myrh.model.entity.User;
 import com.mehdilagdimi.myrh.service.UserService;
 import com.mehdilagdimi.myrh.util.JwtHandler;

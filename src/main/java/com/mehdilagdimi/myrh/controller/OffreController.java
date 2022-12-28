@@ -3,7 +3,7 @@ package com.mehdilagdimi.myrh.controller;
 
 import com.mehdilagdimi.myrh.model.OfferRequest;
 import com.mehdilagdimi.myrh.model.Response;
-import com.mehdilagdimi.myrh.model.entity.Offre;
+import com.mehdilagdimi.myrh.model.entity.Offer;
 import com.mehdilagdimi.myrh.model.entity.User;
 import com.mehdilagdimi.myrh.service.OffreService;
 import jakarta.persistence.PersistenceException;
@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class OffreController {
             ){
         Response response = null;
         try{
-            Page<Offre> offres = offreService.getOffresPaginated(maxItems, requestedPage);
+            Page<Offer> offres = offreService.getOffresPaginated(maxItems, requestedPage);
             response = new Response(
                     HttpStatus.OK,
                     "Successfully Retrieved Offres Page" + requestedPage,
@@ -58,23 +58,18 @@ public class OffreController {
     ){
         Response response = null;
         try{
-            System.out.println("name " + authentication.getName());
-            System.out.println("authorities " + authentication.getAuthorities().toString());
-            System.out.println("user role " + ((User)authentication.getPrincipal()).getRole().toString());
-            System.out.println("user  email " + ((User)authentication.getPrincipal()).getEmail());
-            Offre offre = offreService.saveOffre((User) authentication.getPrincipal(), offerRequest);
-            System.out.println(" after offre save service");
+            Offer offer = offreService.saveOffre((User)authentication.getPrincipal(), offerRequest);
             response = new Response(
-                    HttpStatus.OK,
-                    "Successfully saved Offer",
-                    "offre",
-                    offre
-
+                    HttpStatus.CREATED,
+                    "Successfully saved Offer"
             );
-            System.out.println(" respone object  "+ response);
-        } catch (PersistenceException e){
+
+            response.addData("offer", offer);
+            response.addData("offerDetails", offer.getOfferDetails());
+            response.addData("employer", offer.getEmployer());
+        } catch (PersistenceException | UsernameNotFoundException | NullPointerException e){
             e.printStackTrace();
-            response = new Response(HttpStatus.INTERNAL_SERVER_ERROR,"Failed saving offre");
+            response = new Response(HttpStatus.INTERNAL_SERVER_ERROR,"Failed saving offer");
         } finally {
             return new ResponseEntity<>(response, response.getStatus());
         }
@@ -86,11 +81,11 @@ public class OffreController {
             ){
         Response response = null;
         try{
-            Offre offre = offreService.getOffreById(id);
+            Offer offer = offreService.getOffreById(id);
 
             Map<String, Object> data = new HashMap<>(Map.ofEntries(
-                    Map.entry("offre", offre),
-                    Map.entry("offreDetails", offre.getOffreDetails())
+                    Map.entry("offre", offer),
+                    Map.entry("offreDetails", offer.getOfferDetails())
             ));
 
             response = new Response(
