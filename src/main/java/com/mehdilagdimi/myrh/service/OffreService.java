@@ -1,6 +1,7 @@
 package com.mehdilagdimi.myrh.service;
 
 
+import com.mehdilagdimi.myrh.base.OfferFI;
 import com.mehdilagdimi.myrh.model.OfferRequest;
 import com.mehdilagdimi.myrh.model.entity.Employer;
 import com.mehdilagdimi.myrh.model.entity.Offer;
@@ -72,5 +73,13 @@ public class OffreService{
         return offer;
     }
 
+    public Offer updateOffer(Long id, OfferFI updateImpl){
+        Offer offer = offreRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException());
+        //execute the implemenation to update a certain field
+        updateImpl.update(offer);
 
+        offreRepository.save(offer);
+        return offer;
+    }
 }

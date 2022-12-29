@@ -2,8 +2,10 @@ package com.mehdilagdimi.myrh.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mehdilagdimi.myrh.base.enums.Education;
+import com.mehdilagdimi.myrh.base.enums.OfferStatus;
 import com.mehdilagdimi.myrh.base.enums.OfferType;
 import com.mehdilagdimi.myrh.base.enums.Profile;
 import jakarta.persistence.*;
@@ -44,6 +46,11 @@ public class Offer implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Basic(optional = false)
+    private OfferStatus offerStatus = OfferStatus.WAITING;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Basic(optional = false)
     private Profile profile;
 
 
@@ -61,13 +68,13 @@ public class Offer implements Serializable {
     private Float salary;
 
 
-    @JsonIgnore
+    @JsonManagedReference
     @OneToOne(mappedBy = "offer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
         @PrimaryKeyJoinColumn
     OfferDetails offerDetails;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     Employer employer;
 

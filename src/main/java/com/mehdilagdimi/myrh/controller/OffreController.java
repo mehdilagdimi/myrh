@@ -1,6 +1,8 @@
 package com.mehdilagdimi.myrh.controller;
 
 
+import com.mehdilagdimi.myrh.base.OfferFI;
+import com.mehdilagdimi.myrh.base.enums.OfferStatus;
 import com.mehdilagdimi.myrh.model.OfferRequest;
 import com.mehdilagdimi.myrh.model.Response;
 import com.mehdilagdimi.myrh.model.entity.Offer;
@@ -16,30 +18,31 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/offers")
 public class OffreController {
 
     @Autowired
     OffreService offreService;
 
-    @GetMapping("/offres")
-    public ResponseEntity<Response> getOffres(
+    @GetMapping
+    public ResponseEntity<Response> getOffers(
             @RequestParam(defaultValue = "10") Integer maxItems,
             @RequestParam(defaultValue = "0") Integer requestedPage
             ){
         Response response = null;
         try{
-            Page<Offer> offres = offreService.getOffresPaginated(maxItems, requestedPage);
+            Page<Offer> offers = offreService.getOffresPaginated(maxItems, requestedPage);
             response = new Response(
                     HttpStatus.OK,
                     "Successfully Retrieved Offres Page" + requestedPage,
-                    "offres",
-                    offres
+                    "offers",
+                    offers
             );
 
         }catch (EmptyResultDataAccessException e){
@@ -51,8 +54,8 @@ public class OffreController {
         }
     }
 
-    @PostMapping("/offres/add")
-    public ResponseEntity<Response> addOffre(
+    @PostMapping("/add")
+    public ResponseEntity<Response> addOffer(
             Authentication authentication,
             @RequestBody OfferRequest offerRequest
     ){
@@ -75,8 +78,8 @@ public class OffreController {
         }
     }
 
-    @GetMapping("/offres/{id}")
-    public ResponseEntity<Response> getOffre(
+    @GetMapping("/{id}")
+    public ResponseEntity<Response> getOffer(
             @PathVariable Long id
             ){
         Response response = null;
@@ -84,8 +87,7 @@ public class OffreController {
             Offer offer = offreService.getOffreById(id);
 
             Map<String, Object> data = new HashMap<>(Map.ofEntries(
-                    Map.entry("offre", offer),
-                    Map.entry("offreDetails", offer.getOfferDetails())
+                    Map.entry("offre", offer)
             ));
 
             response = new Response(
@@ -103,5 +105,34 @@ public class OffreController {
         }
     }
 
+    @PostMapping("/{id}")
+    public ResponseEntity<Response> updateOfferStatus(
+            @PathVariable Long id,
+            @RequestBody OfferRequest offerRequest
+    ){
+        Response response = null;
+        try{
+            OfferFI updateStatusImpl = (offer) -> offer.setOfferStatus(offerRequest.getOfferStatus());
+            Offer offer = offreService.updateOffer(id, updateStatusImpl);
+
+            Map<String, Object> data = new HashMap<>(Map.ofEntries(
+                    Map.entry("offer", offer),
+                    Map.entry("offerDetails", offer.getOfferDetails())
+            ));
+
+            response = new Response(
+                    HttpStatus.OK,
+                    "Successfully Updated Offer",
+                    data
+            );
+
+        }catch (NoSuchElementException | NullPointerException e){
+            e.printStackTrace();
+            response = new Response(HttpStatus.BAD_REQUEST, "Failed Updating Offer; No Result was found");
+
+        } finally {
+            return new ResponseEntity<>(response, response.getStatus());
+        }
+    }
 
 }

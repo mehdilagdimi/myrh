@@ -1,5 +1,6 @@
 package com.mehdilagdimi.myrh.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,7 +13,7 @@ public class OfferDetails {
     @Id @Column(name = "offre_id")
     private Long id;
 
-    @JsonIgnore
+    @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "offre_id")
     @MapsId

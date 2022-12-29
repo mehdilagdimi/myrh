@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+
 @Service
 public class UserService implements UserDetailsService{
 
@@ -53,5 +55,10 @@ public class UserService implements UserDetailsService{
                 break;
         }
         return user;
+    }
+
+
+    public Employer getEmployer(Long id){
+        return employerRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
     }
 }

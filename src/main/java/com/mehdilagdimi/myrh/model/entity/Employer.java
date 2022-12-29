@@ -1,5 +1,6 @@
 package com.mehdilagdimi.myrh.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -15,8 +16,8 @@ public class Employer extends User {
     private Long identifier;
 
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "employer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    @OneToMany(mappedBy = "employer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true )
     List<Offer> offerList;
 
 
