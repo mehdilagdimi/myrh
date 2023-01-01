@@ -1,14 +1,11 @@
 package com.mehdilagdimi.myrh.controller;
 
 
-import com.mehdilagdimi.myrh.base.OfferFI;
-import com.mehdilagdimi.myrh.base.enums.OfferStatus;
 import com.mehdilagdimi.myrh.model.OfferRequest;
 import com.mehdilagdimi.myrh.model.Response;
 import com.mehdilagdimi.myrh.model.entity.Offer;
 import com.mehdilagdimi.myrh.model.entity.User;
-import com.mehdilagdimi.myrh.service.OffreService;
-import io.jsonwebtoken.ExpiredJwtException;
+import com.mehdilagdimi.myrh.service.OfferService;
 import jakarta.persistence.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -19,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -30,7 +26,7 @@ import java.util.function.Consumer;
 public class OffreController {
 
     @Autowired
-    OffreService offreService;
+    OfferService offerService;
 
     @GetMapping
     public ResponseEntity<Response> getOffers(
@@ -39,7 +35,7 @@ public class OffreController {
             ){
         Response response = null;
         try{
-            Page<Offer> offers = offreService.getOffresPaginated(maxItems, requestedPage);
+            Page<Offer> offers = offerService.getOffresPaginated(maxItems, requestedPage);
             response = new Response(
                     HttpStatus.OK,
                     "Successfully Retrieved Offres Page" + requestedPage,
@@ -63,7 +59,7 @@ public class OffreController {
     ){
         Response response = null;
         try{
-            Offer offer = offreService.saveOffre((User)authentication.getPrincipal(), offerRequest);
+            Offer offer = offerService.saveOffre((User)authentication.getPrincipal(), offerRequest);
             response = new Response(
                     HttpStatus.CREATED,
                     "Successfully saved Offer"
@@ -86,7 +82,7 @@ public class OffreController {
             ){
         Response response = null;
         try{
-            Offer offer = offreService.getOffreById(id);
+            Offer offer = offerService.getOffreById(id);
 
             Map<String, Object> data = new HashMap<>(Map.ofEntries(
                     Map.entry("offre", offer)
@@ -115,7 +111,7 @@ public class OffreController {
         try{
 //            OfferFI updateStatusImpl = (offer) -> offer.setOfferStatus(offerRequest.getOfferStatus());
             Consumer<Offer> updateStatusImpl = (offer) -> offer.setOfferStatus(offerRequest.getOfferStatus());
-            Offer offer = offreService.updateOffer(offerRequest.getId(), updateStatusImpl);
+            Offer offer = offerService.updateOffer(offerRequest.getId(), updateStatusImpl);
 
             Map<String, Object> data = new HashMap<>(Map.ofEntries(
                     Map.entry("offer", offer),

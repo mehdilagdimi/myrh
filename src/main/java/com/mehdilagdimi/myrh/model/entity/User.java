@@ -153,4 +153,12 @@ public class User implements UserDetails {
     public void setRole(UserRole role) {
         this.role = role;
     }
+
+    public ProfileImage getImage() {
+        return image;
+    }
+
+    public void setImage(ProfileImage image) {
+        this.image = image;
+    }
 }

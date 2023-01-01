@@ -58,6 +58,9 @@ public class UserService implements UserDetailsService{
     }
 
 
+    public User getUser(Long id){
+        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
+    }
     public Employer getEmployer(Long id){
         return employerRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
     }

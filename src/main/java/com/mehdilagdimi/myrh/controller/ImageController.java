@@ -1,6 +1,8 @@
 package com.mehdilagdimi.myrh.controller;
 
+import com.mehdilagdimi.myrh.model.Image;
 import com.mehdilagdimi.myrh.model.Response;
+import com.mehdilagdimi.myrh.model.entity.Offer;
 import com.mehdilagdimi.myrh.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -12,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/images")
@@ -25,11 +25,14 @@ class ImageController {
     @PostMapping("/upload")
     public Long uploadImage(@RequestParam MultipartFile multipartImage) throws Exception {
         Long id = 452L;
+        //for testing upload for offer
+
         return imageService.saveImage(id, multipartImage);
+//        return imageService.saveImageFor(Offer.class, id, multipartImage);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-    ResponseEntity<Resource>  downloadImage(@PathVariable Long id) {
+    ResponseEntity<?>  downloadImage(@PathVariable Long id) {
         byte[] image = null;
         Response response = null;
         try{
@@ -43,6 +46,9 @@ class ImageController {
            e.printStackTrace();
             response = new Response(HttpStatus.BAD_REQUEST, "Failed fetching image");
        } finally {
+            if(image == null || response == null)
+                return ResponseEntity.internalServerError().body("Failed fetching image");
+
             return new ResponseEntity<>(new ByteArrayResource(image), response.getStatus());
         }
     }

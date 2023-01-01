@@ -1,7 +1,6 @@
 package com.mehdilagdimi.myrh.service;
 
 
-import com.mehdilagdimi.myrh.base.OfferFI;
 import com.mehdilagdimi.myrh.model.OfferRequest;
 import com.mehdilagdimi.myrh.model.entity.Employer;
 import com.mehdilagdimi.myrh.model.entity.Offer;
@@ -24,7 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 @Service
-public class OffreService{
+public class OfferService {
 
     @Autowired
     OffreRepository offreRepository;
