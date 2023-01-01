@@ -19,6 +19,7 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OfferRequest {
 
+    private final Long id;
     private final String title;
     private final OfferType offerType;
     private final OfferStatus offerStatus;

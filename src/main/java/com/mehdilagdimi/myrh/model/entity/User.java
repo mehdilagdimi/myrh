@@ -1,12 +1,16 @@
 package com.mehdilagdimi.myrh.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mehdilagdimi.myrh.base.enums.UserRole;
+import com.mehdilagdimi.myrh.model.Image;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,12 +31,18 @@ public class User implements UserDetails {
 
     @JsonIgnore
     private String password;
+
+    private Timestamp createdAt = Timestamp.from(Instant.now());
     private boolean isEnabled = true;
     private boolean isAccountExpired = false;
     private boolean isCredentialsExpired = false;
     private boolean isLocked = false;
 
-    private String photoProfile = null;
+//    private String photoProfile = null;
+    @JsonManagedReference
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    ProfileImage image;
 
     @Transient
     private List<SimpleGrantedAuthority> grantedAuthorityList;

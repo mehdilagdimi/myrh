@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 
 @Service
 public class OffreService{
@@ -73,11 +74,12 @@ public class OffreService{
         return offer;
     }
 
-    public Offer updateOffer(Long id, OfferFI updateImpl){
+    public Offer updateOffer(Long id, Consumer<Offer> updateImpl) throws NoSuchElementException{
         Offer offer = offreRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException());
         //execute the implemenation to update a certain field
-        updateImpl.update(offer);
+//        updateImpl.update(offer);
+        updateImpl.accept(offer);
 
         offreRepository.save(offer);
         return offer;

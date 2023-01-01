@@ -3,6 +3,7 @@ package com.mehdilagdimi.myrh.util;
 
 import com.mehdilagdimi.myrh.model.entity.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class JwtHandler {
         return extractClaim(token, (claims) -> (String)claims.get("role"));
     }
 
-    public Date extractExpiration(String token) {
+    public Date extractExpiration(String token){
         return extractClaim(token, Claims::getExpiration);
     }
 
@@ -56,7 +57,7 @@ public class JwtHandler {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
-    public Boolean validateToken(String token, User userDetails) {
+    public Boolean validateToken(String token, User userDetails){
         final String username = extractUsername(token);
         return (username.equals(userDetails.getEmail()) && !isTokenExpired(token));
     }

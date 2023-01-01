@@ -8,6 +8,7 @@ import com.mehdilagdimi.myrh.model.Response;
 import com.mehdilagdimi.myrh.model.entity.Offer;
 import com.mehdilagdimi.myrh.model.entity.User;
 import com.mehdilagdimi.myrh.service.OffreService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/api/offers")
@@ -105,15 +107,15 @@ public class OffreController {
         }
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/update-status")
     public ResponseEntity<Response> updateOfferStatus(
-            @PathVariable Long id,
             @RequestBody OfferRequest offerRequest
     ){
         Response response = null;
         try{
-            OfferFI updateStatusImpl = (offer) -> offer.setOfferStatus(offerRequest.getOfferStatus());
-            Offer offer = offreService.updateOffer(id, updateStatusImpl);
+//            OfferFI updateStatusImpl = (offer) -> offer.setOfferStatus(offerRequest.getOfferStatus());
+            Consumer<Offer> updateStatusImpl = (offer) -> offer.setOfferStatus(offerRequest.getOfferStatus());
+            Offer offer = offreService.updateOffer(offerRequest.getId(), updateStatusImpl);
 
             Map<String, Object> data = new HashMap<>(Map.ofEntries(
                     Map.entry("offer", offer),

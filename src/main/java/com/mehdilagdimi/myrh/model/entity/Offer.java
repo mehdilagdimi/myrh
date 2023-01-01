@@ -1,13 +1,11 @@
 package com.mehdilagdimi.myrh.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mehdilagdimi.myrh.base.enums.Education;
 import com.mehdilagdimi.myrh.base.enums.OfferStatus;
 import com.mehdilagdimi.myrh.base.enums.OfferType;
 import com.mehdilagdimi.myrh.base.enums.Profile;
+import com.mehdilagdimi.myrh.model.Image;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -67,6 +65,10 @@ public class Offer implements Serializable {
     @Basic(optional = true)
     private Float salary;
 
+    @JsonManagedReference
+    @OneToOne(mappedBy = "offer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+            @PrimaryKeyJoinColumn
+    OfferImage image;
 
     @JsonManagedReference
     @OneToOne(mappedBy = "offer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
