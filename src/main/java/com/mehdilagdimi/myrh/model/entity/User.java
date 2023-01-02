@@ -33,17 +33,22 @@ public class User implements UserDetails {
     private String password;
 
     private Timestamp createdAt = Timestamp.from(Instant.now());
+    @JsonIgnore
     private boolean isEnabled = true;
+    @JsonIgnore
     private boolean isAccountExpired = false;
+    @JsonIgnore
     private boolean isCredentialsExpired = false;
+    @JsonIgnore
     private boolean isLocked = false;
 
 //    private String photoProfile = null;
-    @JsonManagedReference
+    @JsonIgnore
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     ProfileImage image;
 
+    @JsonIgnore
     @Transient
     private List<SimpleGrantedAuthority> grantedAuthorityList;
 

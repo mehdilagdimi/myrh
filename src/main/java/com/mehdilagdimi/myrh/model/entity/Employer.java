@@ -12,7 +12,7 @@ import java.util.List;
 @DiscriminatorValue("2")
 @Data
 public class Employer extends User {
-
+    @JsonIgnore
     private Long identifier;
 
 

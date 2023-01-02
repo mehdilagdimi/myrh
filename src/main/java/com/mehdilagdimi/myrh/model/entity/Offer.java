@@ -1,5 +1,6 @@
 package com.mehdilagdimi.myrh.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mehdilagdimi.myrh.base.enums.Education;
 import com.mehdilagdimi.myrh.base.enums.OfferStatus;
@@ -65,7 +66,7 @@ public class Offer implements Serializable {
     @Basic(optional = true)
     private Float salary;
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToOne(mappedBy = "offer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
             @PrimaryKeyJoinColumn
     OfferImage image;

@@ -3,6 +3,7 @@ package com.mehdilagdimi.myrh.controller;
 import com.mehdilagdimi.myrh.model.Image;
 import com.mehdilagdimi.myrh.model.Response;
 import com.mehdilagdimi.myrh.model.entity.Offer;
+import com.mehdilagdimi.myrh.model.entity.User;
 import com.mehdilagdimi.myrh.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -32,11 +33,17 @@ class ImageController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-    ResponseEntity<?>  downloadImage(@PathVariable Long id) {
+    ResponseEntity<?>  downloadImage(@PathVariable Long id, @RequestParam("for") String getFor) {
         byte[] image = null;
         Response response = null;
         try{
-            image = imageService.getImage(id);
+            switch (getFor){
+                case "offer": image = imageService.getOfferImage(id);
+                        break;
+                case "user": image = imageService.getProfileImage(id);
+                        break;
+            }
+
             System.out.println(" inside image download contr");
             response = new Response(
                     HttpStatus.OK,

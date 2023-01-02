@@ -6,6 +6,7 @@ import com.mehdilagdimi.myrh.model.Response;
 import com.mehdilagdimi.myrh.model.entity.Offer;
 import com.mehdilagdimi.myrh.model.entity.User;
 import com.mehdilagdimi.myrh.service.OfferService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.persistence.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -40,7 +41,7 @@ public class OffreController {
                     HttpStatus.OK,
                     "Successfully Retrieved Offres Page" + requestedPage,
                     "offers",
-                    offers
+                    offers.getContent()
             );
 
         }catch (EmptyResultDataAccessException e){
@@ -52,6 +53,7 @@ public class OffreController {
         }
     }
 
+    @RolesAllowed("ROLE_EMPLOYER")
     @PostMapping("/add")
     public ResponseEntity<Response> addOffer(
             Authentication authentication,
@@ -75,6 +77,7 @@ public class OffreController {
             return new ResponseEntity<>(response, response.getStatus());
         }
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Response> getOffer(
@@ -103,6 +106,8 @@ public class OffreController {
         }
     }
 
+
+    @RolesAllowed("ROLE_AGENT")
     @PostMapping("/update-status")
     public ResponseEntity<Response> updateOfferStatus(
             @RequestBody OfferRequest offerRequest

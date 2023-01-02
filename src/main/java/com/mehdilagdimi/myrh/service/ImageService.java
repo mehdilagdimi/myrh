@@ -81,8 +81,13 @@ public class ImageService {
         return imgId;
     }
 
-    public byte[] getImage(Long id) throws ResponseStatusException{
+    public byte[] getOfferImage(Long id) throws ResponseStatusException{
         return offerImageImageRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+                .getContent();
+    }
+    public byte[] getProfileImage(Long id) throws ResponseStatusException{
+        return profileImageImageRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
                 .getContent();
     }
