@@ -1,6 +1,9 @@
 package com.mehdilagdimi.myrh.controller;
 
 
+import com.mehdilagdimi.myrh.base.enums.Education;
+import com.mehdilagdimi.myrh.base.enums.OfferType;
+import com.mehdilagdimi.myrh.base.enums.Profile;
 import com.mehdilagdimi.myrh.model.OfferRequest;
 import com.mehdilagdimi.myrh.model.Response;
 import com.mehdilagdimi.myrh.model.entity.Offer;
@@ -31,8 +34,9 @@ public class OffreController {
 
     @GetMapping
     public ResponseEntity<Response> getOffers(
-            @RequestParam(defaultValue = "10") Integer maxItems,
+            @RequestParam(defaultValue = "20") Integer maxItems,
             @RequestParam(defaultValue = "0") Integer requestedPage
+//            @RequestParam(defaultValue = "0") Integer requestedPage
             ){
         Response response = null;
         try{
@@ -40,7 +44,7 @@ public class OffreController {
             response = new Response(
                     HttpStatus.OK,
                     "Successfully Retrieved Offres Page" + requestedPage,
-                    "offers",
+                    "data",
                     offers.getContent()
             );
 
@@ -53,7 +57,7 @@ public class OffreController {
         }
     }
 
-    @RolesAllowed("ROLE_EMPLOYER")
+    @RolesAllowed("EMPLOYER")
     @PostMapping("/add")
     public ResponseEntity<Response> addOffer(
             Authentication authentication,
@@ -73,6 +77,28 @@ public class OffreController {
         } catch (PersistenceException | UsernameNotFoundException | NullPointerException e){
             e.printStackTrace();
             response = new Response(HttpStatus.INTERNAL_SERVER_ERROR,"Failed saving offer");
+        } finally {
+            return new ResponseEntity<>(response, response.getStatus());
+        }
+    }
+    @RolesAllowed("EMPLOYER")
+    @GetMapping("/fields-options-list")
+    public ResponseEntity<Response> addOffer(
+
+    ){
+        Response response = null;
+        try{
+            response = new Response(
+                    HttpStatus.OK,
+                    "Successfully retrieved list of offer fields"
+            );
+
+            response.addData("education", Education.values());
+            response.addData("offerType", OfferType.values());
+            response.addData("profile", Profile.values());
+        } catch (PersistenceException | UsernameNotFoundException | NullPointerException e){
+            e.printStackTrace();
+            response = new Response(HttpStatus.INTERNAL_SERVER_ERROR,"Failed retrieving list of offer fields");
         } finally {
             return new ResponseEntity<>(response, response.getStatus());
         }

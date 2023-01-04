@@ -5,9 +5,11 @@ import com.mehdilagdimi.myrh.model.SignupRequest;
 import com.mehdilagdimi.myrh.model.entity.Agent;
 import com.mehdilagdimi.myrh.model.entity.Employer;
 import com.mehdilagdimi.myrh.model.entity.User;
+import com.mehdilagdimi.myrh.model.entity.Visitor;
 import com.mehdilagdimi.myrh.repository.AgentRepository;
 import com.mehdilagdimi.myrh.repository.EmployerRepository;
 import com.mehdilagdimi.myrh.repository.UserRepository;
+import com.mehdilagdimi.myrh.repository.VisitorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,6 +28,8 @@ public class UserService implements UserDetailsService{
     EmployerRepository employerRepository;
     @Autowired
     AgentRepository agentRepository;
+    @Autowired
+    VisitorRepository visitorRepository;
 
 
     @Autowired
@@ -52,6 +56,9 @@ public class UserService implements UserDetailsService{
                 break;
             case "ROLE_AGENT":
                 agentRepository.save(new Agent(user));
+                break;
+            case "ROLE_VISITOR":
+                visitorRepository.save(new Visitor(user));
                 break;
         }
         return user;

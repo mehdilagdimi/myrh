@@ -7,7 +7,9 @@ import com.mehdilagdimi.myrh.base.enums.OfferStatus;
 import com.mehdilagdimi.myrh.base.enums.OfferType;
 import com.mehdilagdimi.myrh.base.enums.Profile;
 import com.mehdilagdimi.myrh.model.Image;
+import com.mehdilagdimi.myrh.util.TimeUtil;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,9 +31,15 @@ public class Offer implements Serializable {
     private String title;
 
 
+//    @JsonIgnore
     @Column(nullable = false)
     @Basic(optional = false)
     private Timestamp publicationDate = Timestamp.from(Instant.now());
+
+    @Transient
+    @JsonIgnore
+    @Getter(AccessLevel.NONE)
+    private String date;
 
     @Column(nullable = false)
     @Basic(optional = false)
@@ -104,6 +112,15 @@ public class Offer implements Serializable {
         this.ville = ville;
         this.education = education;
         this.salary = salary;
+    }
+
+    public String getDate() {
+        date = TimeUtil.timestampToString(this.publicationDate);
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
 
