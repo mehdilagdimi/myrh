@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.NoSuchElementException;
 
 @Service
@@ -27,8 +28,11 @@ public class ImageService {
     ProfileImageRepository profileImageImageRepository;
 
 
-    public Long saveImage(Long id, MultipartFile multipartImage) throws IOException, NoSuchElementException {
+    public Long saveImage(User employer, Long id, MultipartFile multipartImage) throws IOException, NoSuchElementException, InvalidParameterException {
         Offer offer = offerService.getOffreById(id);
+
+        if(employer.getId() != offer.getEmployer().getId()) throw new InvalidParameterException();
+
         Image image;
 
         if(offer.getImage() == null){ image = new OfferImage(); }

@@ -11,12 +11,14 @@ import com.mehdilagdimi.myrh.base.enums.Profile;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Getter
 @Setter
 @RequiredArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString
 public class OfferRequest {
 
     private final Long id;
@@ -30,5 +32,7 @@ public class OfferRequest {
 
     @JsonProperty(required = false)
     private final Float salary;
+
+
 
 }

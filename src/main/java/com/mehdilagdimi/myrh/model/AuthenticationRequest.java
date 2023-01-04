@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 public class AuthenticationRequest {
-    private final String email;
     private final String password;
+    private final String email;
 }

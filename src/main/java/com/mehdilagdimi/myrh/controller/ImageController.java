@@ -5,12 +5,14 @@ import com.mehdilagdimi.myrh.model.Response;
 import com.mehdilagdimi.myrh.model.entity.Offer;
 import com.mehdilagdimi.myrh.model.entity.User;
 import com.mehdilagdimi.myrh.service.ImageService;
+import com.mehdilagdimi.myrh.service.OfferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,13 +25,26 @@ class ImageController {
     @Autowired
     ImageService imageService;
 
-    @PostMapping("/upload")
-    public Long uploadImage(@RequestParam MultipartFile multipartImage) throws Exception {
-        Long id = 452L;
-        //for testing upload for offer
+    @Autowired
+    OfferService offerService;
 
-        return imageService.saveImage(id, multipartImage);
-//        return imageService.saveImageFor(Offer.class, id, multipartImage);
+
+    @PostMapping("/upload/{offerId}")
+    public Long uploadImage(
+            Authentication authentication,
+            @RequestParam MultipartFile image,
+            @PathVariable Long offerId
+    ) {
+        //for testing upload for offer
+        Long imageId;
+        try{
+            imageId = imageService.saveImage((User)authentication.getPrincipal(), offerId, image);
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return imageId;
+
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.IMAGE_JPEG_VALUE)

@@ -10,6 +10,7 @@ import com.mehdilagdimi.myrh.repository.EmployerRepository;
 import com.mehdilagdimi.myrh.repository.OffreDetailsRepository;
 import com.mehdilagdimi.myrh.repository.OffreRepository;
 import jakarta.persistence.PersistenceException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -21,8 +22,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+import org.apache.commons.lang3.ObjectUtils;
+
+import static java.rmi.server.LogStream.log;
 
 @Service
+@Slf4j
 public class OfferService {
 
     @Autowired
@@ -51,10 +57,11 @@ public class OfferService {
                 orElseThrow(() -> new NoSuchElementException());
     }
 
-    public Offer saveOffre(User principal, OfferRequest req) throws PersistenceException, UsernameNotFoundException {
+    public Offer saveOffre(User principal, OfferRequest req) throws PersistenceException, UsernameNotFoundException, NullPointerException {
         Employer employer = employerRepository.findById(principal.getId())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found......"));
-
+        System.out.println(" logging re" + req.toString());
+        if(ObjectUtils.anyNull(req)) throw new NullPointerException();
         Offer offer = new Offer(
                 req.getTitle(),
                 req.getOfferType(),

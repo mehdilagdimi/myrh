@@ -65,15 +65,15 @@ public class OffreController {
     ){
         Response response = null;
         try{
+            System.out.println(" inside control offer req " + offerRequest.toString());
             Offer offer = offerService.saveOffre((User)authentication.getPrincipal(), offerRequest);
             response = new Response(
                     HttpStatus.CREATED,
                     "Successfully saved Offer"
             );
 
-            response.addData("offer", offer);
-            response.addData("offerDetails", offer.getOfferDetails());
-            response.addData("employer", offer.getEmployer());
+            response.addData("data", offer);
+
         } catch (PersistenceException | UsernameNotFoundException | NullPointerException e){
             e.printStackTrace();
             response = new Response(HttpStatus.INTERNAL_SERVER_ERROR,"Failed saving offer");
@@ -114,12 +114,12 @@ public class OffreController {
             Offer offer = offerService.getOffreById(id);
 
             Map<String, Object> data = new HashMap<>(Map.ofEntries(
-                    Map.entry("offre", offer)
+                    Map.entry("data", offer)
             ));
 
             response = new Response(
                     HttpStatus.OK,
-                    "Successfully Retrieved Offre",
+                    "Successfully Retrieved Offer",
                     data
             );
 
@@ -144,15 +144,16 @@ public class OffreController {
             Consumer<Offer> updateStatusImpl = (offer) -> offer.setOfferStatus(offerRequest.getOfferStatus());
             Offer offer = offerService.updateOffer(offerRequest.getId(), updateStatusImpl);
 
-            Map<String, Object> data = new HashMap<>(Map.ofEntries(
-                    Map.entry("offer", offer),
-                    Map.entry("offerDetails", offer.getOfferDetails())
-            ));
+//            Map<String, Object> data = new HashMap<>(Map.ofEntries(
+//                    Map.entry("offer", offer),
+//                    Map.entry("offerDetails", offer.getOfferDetails())
+//            ));
 
             response = new Response(
                     HttpStatus.OK,
                     "Successfully Updated Offer",
-                    data
+                    "data",
+                    offer
             );
 
         }catch (NoSuchElementException | NullPointerException e){

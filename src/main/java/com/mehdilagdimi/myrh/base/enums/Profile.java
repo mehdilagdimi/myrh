@@ -3,7 +3,7 @@ package com.mehdilagdimi.myrh.base.enums;
 public enum Profile {
     WEB_DEVELOPMENT,
     SOFTWARE_ENGINEERING,
-    HUMAN_RESSOURCES,
+    HUMAN_RESOURCES,
     ELECTRICAL_ENGINEERING,
     MECHANICAL_ENGINEERING,
     CRM_CONSULTANCY,
