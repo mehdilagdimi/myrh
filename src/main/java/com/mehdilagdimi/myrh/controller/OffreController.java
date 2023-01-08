@@ -2,6 +2,7 @@ package com.mehdilagdimi.myrh.controller;
 
 
 import com.mehdilagdimi.myrh.base.enums.Education;
+import com.mehdilagdimi.myrh.base.enums.OfferStatus;
 import com.mehdilagdimi.myrh.base.enums.OfferType;
 import com.mehdilagdimi.myrh.base.enums.Profile;
 import com.mehdilagdimi.myrh.model.OfferRequest;
@@ -35,15 +36,18 @@ public class OffreController {
     @GetMapping
     public ResponseEntity<Response> getOffers(
             @RequestParam(defaultValue = "20") Integer maxItems,
-            @RequestParam(defaultValue = "0") Integer requestedPage
-//            @RequestParam(defaultValue = "0") Integer requestedPage
+            @RequestParam(defaultValue = "0") Integer requestedPage,
+            @RequestParam(name = "status",required = false) OfferStatus status
             ){
         Response response = null;
         try{
-            Page<Offer> offers = offerService.getOffresPaginated(maxItems, requestedPage);
+            Page<Offer> offers;
+            if(status == null) offers = offerService.getAllOffersPaginated(maxItems, requestedPage);
+            else { offers = offerService.getAllWaitingOffersPaginated(maxItems, requestedPage, status);}
+
             response = new Response(
                     HttpStatus.OK,
-                    "Successfully Retrieved Offres Page" + requestedPage,
+                    "Successfully Retrieved Offers Page" + requestedPage,
                     "data",
                     offers.getContent()
             );
@@ -81,7 +85,6 @@ public class OffreController {
             return new ResponseEntity<>(response, response.getStatus());
         }
     }
-    @RolesAllowed("EMPLOYER")
     @GetMapping("/fields-options-list")
     public ResponseEntity<Response> addOffer(
 
@@ -144,10 +147,6 @@ public class OffreController {
             Consumer<Offer> updateStatusImpl = (offer) -> offer.setOfferStatus(offerRequest.getOfferStatus());
             Offer offer = offerService.updateOffer(offerRequest.getId(), updateStatusImpl);
 
-//            Map<String, Object> data = new HashMap<>(Map.ofEntries(
-//                    Map.entry("offer", offer),
-//                    Map.entry("offerDetails", offer.getOfferDetails())
-//            ));
 
             response = new Response(
                     HttpStatus.OK,

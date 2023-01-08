@@ -1,0 +1,9 @@
+security:
+  oauth2:
+    client:
+      registration:
+        facebook:
+          clientId:
+          clientSecret:
+
+

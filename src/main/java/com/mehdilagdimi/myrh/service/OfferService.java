@@ -1,6 +1,7 @@
 package com.mehdilagdimi.myrh.service;
 
 
+import com.mehdilagdimi.myrh.base.enums.OfferStatus;
 import com.mehdilagdimi.myrh.model.OfferRequest;
 import com.mehdilagdimi.myrh.model.entity.Employer;
 import com.mehdilagdimi.myrh.model.entity.Offer;
@@ -40,13 +41,24 @@ public class OfferService {
     @Autowired
     OffreDetailsRepository offreDetailsRepository;
 
-    public Page<Offer> getOffresPaginated(int maxItems, int requestedPage) throws EmptyResultDataAccessException{
+    public Page<Offer> getAllOffersPaginated(int maxItems, int requestedPage) throws EmptyResultDataAccessException{
         Pageable pageableOffres = PageRequest.of(
                 requestedPage, maxItems,
                 Sort.by("publicationDate").descending().and(Sort.by("isExpired"))
         );
 
         Page<Offer> offers = offreRepository.findAll(pageableOffres);
+
+        if(offers.isEmpty()) throw new EmptyResultDataAccessException("List of offre records is empty", maxItems);
+        return offers;
+    }
+    public Page<Offer> getAllWaitingOffersPaginated(int maxItems, int requestedPage, OfferStatus offerStatus) throws EmptyResultDataAccessException{
+        Pageable pageableOffres = PageRequest.of(
+                requestedPage, maxItems,
+                Sort.by("publicationDate").descending().and(Sort.by("isExpired"))
+        );
+
+        Page<Offer> offers = offreRepository.findAllByOfferStatus(offerStatus, pageableOffres);
 
         if(offers.isEmpty()) throw new EmptyResultDataAccessException("List of offre records is empty", maxItems);
         return offers;
