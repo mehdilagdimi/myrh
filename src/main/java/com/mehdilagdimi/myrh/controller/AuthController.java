@@ -18,7 +18,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -95,5 +101,12 @@ public class AuthController {
             return new ResponseEntity<>(response, response.getStatus());
         }
 
+    }
+
+    @GetMapping("/get-user")
+    public Map<String, Object> getUser(@AuthenticationPrincipal OAuth2User principal) {
+//        System.out.println(" path var auth " + regID);
+        System.out.println(" inside get auth user ");
+        return Collections.singletonMap("name", principal.getAttribute("name"));
     }
 }
