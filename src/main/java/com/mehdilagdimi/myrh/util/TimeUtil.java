@@ -16,10 +16,6 @@ public abstract class TimeUtil {
     }
     public static String timestampToString (Timestamp timestamp) {
         String timestampStr ="";
-//        if (StringUtils.countMatches(timestamp.toString(), "T") == 1) {
-//            timestampStr = timestamp.toString().replace("T", " ");
-//
-//        }
         return timestampStr.split(".")[0];
     }
     public static String timestampToHtmlDateTimeLocal (String date) {
