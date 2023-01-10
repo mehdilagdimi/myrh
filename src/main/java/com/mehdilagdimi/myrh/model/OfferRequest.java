@@ -1,6 +1,7 @@
 package com.mehdilagdimi.myrh.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mehdilagdimi.myrh.base.enums.Education;
@@ -8,17 +9,14 @@ import com.mehdilagdimi.myrh.base.enums.OfferStatus;
 import com.mehdilagdimi.myrh.base.enums.OfferType;
 import com.mehdilagdimi.myrh.base.enums.Profile;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 
 @Getter
 @Setter
 @RequiredArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OfferRequest {
 
     private final Long id;
