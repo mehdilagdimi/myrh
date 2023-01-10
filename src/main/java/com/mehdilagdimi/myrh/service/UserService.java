@@ -54,9 +54,6 @@ public class UserService implements UserDetailsService{
             case "ROLE_EMPLOYER":
                 employerRepository.save(new Employer(user));
                 break;
-            case "ROLE_AGENT":
-                agentRepository.save(new Agent(user));
-                break;
             case "ROLE_VISITOR":
                 visitorRepository.save(new Visitor(user));
                 break;

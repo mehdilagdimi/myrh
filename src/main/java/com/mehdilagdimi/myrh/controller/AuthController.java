@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -82,6 +83,7 @@ public class AuthController {
     ){
         Response response = null;
         try{
+            if(signupRequest.getRole().toString().equals("ROLE_AGENT")) throw new IllegalArgumentException();
             User user = userService.addUser(signupRequest);
             String jwt = jwtHandler.generateToken(user);
 
@@ -91,11 +93,11 @@ public class AuthController {
                     "data",
                     jwt
             );
-        } catch (UserAlreadyExistAuthenticationException e){
+        } catch (UserAlreadyExistAuthenticationException | IllegalArgumentException e){
             e.printStackTrace();
             response = new Response(
                     HttpStatus.BAD_REQUEST,
-                    "Error signing up, user already exists"
+                    "Error signing up, user already exists or invalid request"
             );
         } finally {
             return new ResponseEntity<>(response, response.getStatus());
@@ -103,10 +105,10 @@ public class AuthController {
 
     }
 
-    @GetMapping("/get-user")
-    public Map<String, Object> getUser(@AuthenticationPrincipal OAuth2User principal) {
-//        System.out.println(" path var auth " + regID);
-        System.out.println(" inside get auth user ");
-        return Collections.singletonMap("name", principal.getAttribute("name"));
-    }
+//    @GetMapping("/get-user")
+//    public Map<String, Object> getUser(@AuthenticationPrincipal OAuth2User principal) {
+////        System.out.println(" path var auth " + regID);
+//        System.out.println(" inside get auth user ");
+//        return Collections.singletonMap("name", principal.getAttribute("name"));
+//    }
 }

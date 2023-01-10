@@ -35,7 +35,7 @@ public class OffreController {
 
     @GetMapping
     public ResponseEntity<Response> getOffers(
-            @RequestParam(defaultValue = "20") Integer maxItems,
+            @RequestParam(defaultValue = "23") Integer maxItems,
             @RequestParam(defaultValue = "0") Integer requestedPage,
             @RequestParam(name = "status",required = false) OfferStatus status
             ){
@@ -136,12 +136,15 @@ public class OffreController {
     }
 
 
-    @RolesAllowed("ROLE_AGENT")
+    @RolesAllowed("AGENT")
     @PostMapping("/update-status")
     public ResponseEntity<Response> updateOfferStatus(
             @RequestBody OfferRequest offerRequest
     ){
         Response response = null;
+
+        System.out.println(" offer req " + offerRequest.getOfferStatus());
+        System.out.println(offerRequest.toString());
         try{
 //            OfferFI updateStatusImpl = (offer) -> offer.setOfferStatus(offerRequest.getOfferStatus());
             Consumer<Offer> updateStatusImpl = (offer) -> offer.setOfferStatus(offerRequest.getOfferStatus());
