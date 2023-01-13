@@ -42,13 +42,15 @@ public class OffreController {
             @RequestParam(defaultValue = "23") Integer maxItems,
             @RequestParam(defaultValue = "0") Integer requestedPage,
             @RequestParam(name = "status",required = false) OfferStatus status,
-            @RequestParam(required = false) Map<String, String> seachFilters
+            @RequestParam(required = false) Map<String, String> searchFilters
             ){
         Response response = null;
         try{
-            Page<Offer> offers;
-            if(seachFilters.size() > 0)  offers = offerService.getSearchedOffers(seachFilters, maxItems, requestedPage);
-            else {
+
+            Page<Offer> offers = null;
+            if(searchFilters.size() > 0) {
+                offers = offerService.getSearchedOffers(searchFilters, maxItems, requestedPage);
+            } else {
                 if(status == null) offers = offerService.getAllOffersPaginated(maxItems, requestedPage);
                 else offers = offerService.getAllWaitingOffersPaginated(maxItems, requestedPage, status);
             }

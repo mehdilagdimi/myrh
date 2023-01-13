@@ -72,25 +72,24 @@ public class OfferService {
     }
 
     public Page<Offer> getSearchedOffers(Map<String, String> filters, int maxItems, int requestedPage){
-
-        OfferSpecification spec1 =
-                new OfferSpecification(new SearchCriteria("title", ":", filters.get("text")));
-        OfferSpecification spec2 =
-                new OfferSpecification(new SearchCriteria("ville", ":", filters.get("city")));
-        OfferSpecification spec3 =
-                new OfferSpecification(new SearchCriteria("offreType", "=", OfferType.valueOf(filters.get("contract"))));
+//        OfferSpecification spec1 =
+//                new OfferSpecification(new SearchCriteria("title", ":", filters.containsKey("text") ? filters.get("text") : null));
+//        OfferSpecification spec2 =
+//                new OfferSpecification(new SearchCriteria("ville", "=", filters.containsKey("city") ? filters.get("city") : null));
+//        OfferSpecification spec3 =
+//                new OfferSpecification(new SearchCriteria("offreType", "=", filters.containsKey("contract") ? OfferType.valueOf(filters.get("contract")) : null));
 
         Pageable pageableOffres = PageRequest.of(
                 requestedPage, maxItems,
                 Sort.by("publicationDate").descending().and(Sort.by("isExpired"))
         );
 
-
         Page<Offer> searchedOffers = offreRepository.searchByFilter(
-                filters.get("text"),
-                filters.get("city"),
-                OfferType.valueOf(filters.get("contract")),
-                pageableOffres);
+                filters.containsKey("text") ? filters.get("text").toLowerCase() : null,
+                filters.containsKey("city") ? filters.get("city").toLowerCase() : null,
+                filters.containsKey("contract") && filters.get("contract") != null ? OfferType.valueOf(filters.get("contract")) : null,
+                pageableOffres
+        );
 
         return searchedOffers;
     }

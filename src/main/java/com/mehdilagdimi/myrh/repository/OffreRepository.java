@@ -15,10 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface OffreRepository extends JpaRepository<Offer, Long>, JpaSpecificationExecutor<Offer> {
 
-    @Query("SELECT o FROM Offer o WHERE (?1 is null or o.title LIKE %?1%)"
-            + " AND (?2 is null or o.ville LIKE %?2%)"
-            + " OR (?3 is null or o.offreType = ?3)"
+    @Query("SELECT o FROM Offer o WHERE (?1 is null or LOWER(o.title) LIKE %?1%)"
+            + " AND (?2 IS NULL OR LOWER(o.ville) LIKE %?2%)"
+            + " AND (?3 IS NULL OR o.offreType = ?3)"
     )
     Page<Offer> searchByFilter(String title, String ville, OfferType offreType, Pageable pageable);
+
     Page<Offer> findAllByOfferStatus(OfferStatus offerStatus, Pageable pageable);
 }
