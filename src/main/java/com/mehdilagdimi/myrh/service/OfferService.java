@@ -85,15 +85,13 @@ public class OfferService {
                 Sort.by("publicationDate").descending().and(Sort.by("isExpired"))
         );
 
+
         Page<Offer> searchedOffers = offreRepository.searchByFilter(
                 filters.get("text"),
                 filters.get("city"),
                 OfferType.valueOf(filters.get("contract")),
                 pageableOffres);
 
-//        Page<Offer> searchedOffers = offreRepository.findAll(Specification.where(spec1), pageableOffres);
-
-//        Page<Offer> searchedOffers = offreRepository.findAll(Specification.where(spec1).and(spec2).or(spec3), pageableOffres);
         return searchedOffers;
     }
 
