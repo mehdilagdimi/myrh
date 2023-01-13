@@ -5,13 +5,16 @@ import com.mehdilagdimi.myrh.base.enums.Education;
 import com.mehdilagdimi.myrh.base.enums.OfferStatus;
 import com.mehdilagdimi.myrh.base.enums.OfferType;
 import com.mehdilagdimi.myrh.base.enums.Profile;
+import com.mehdilagdimi.myrh.model.FilterParams;
 import com.mehdilagdimi.myrh.model.OfferRequest;
 import com.mehdilagdimi.myrh.model.Response;
 import com.mehdilagdimi.myrh.model.entity.Offer;
 import com.mehdilagdimi.myrh.model.entity.User;
+import com.mehdilagdimi.myrh.repository.specification.SearchCriteria;
 import com.mehdilagdimi.myrh.service.OfferService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.persistence.PersistenceException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
@@ -37,13 +41,18 @@ public class OffreController {
     public ResponseEntity<Response> getOffers(
             @RequestParam(defaultValue = "23") Integer maxItems,
             @RequestParam(defaultValue = "0") Integer requestedPage,
-            @RequestParam(name = "status",required = false) OfferStatus status
+            @RequestParam(name = "status",required = false) OfferStatus status,
+            @RequestParam(required = false) Map<String, String> seachFilters
             ){
         Response response = null;
         try{
+
             Page<Offer> offers;
-            if(status == null) offers = offerService.getAllOffersPaginated(maxItems, requestedPage);
-            else { offers = offerService.getAllWaitingOffersPaginated(maxItems, requestedPage, status);}
+            if(seachFilters.size() > 0)  offers = offerService.getSearchedOffers(seachFilters, maxItems, requestedPage);
+            else {
+                if(status == null) offers = offerService.getAllOffersPaginated(maxItems, requestedPage);
+                else offers = offerService.getAllWaitingOffersPaginated(maxItems, requestedPage, status);
+            }
 
             response = new Response(
                     HttpStatus.OK,

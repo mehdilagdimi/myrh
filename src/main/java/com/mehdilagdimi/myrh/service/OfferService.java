@@ -2,6 +2,7 @@ package com.mehdilagdimi.myrh.service;
 
 
 import com.mehdilagdimi.myrh.base.enums.OfferStatus;
+import com.mehdilagdimi.myrh.base.enums.OfferType;
 import com.mehdilagdimi.myrh.model.OfferRequest;
 import com.mehdilagdimi.myrh.model.entity.Employer;
 import com.mehdilagdimi.myrh.model.entity.Offer;
@@ -10,6 +11,8 @@ import com.mehdilagdimi.myrh.model.entity.User;
 import com.mehdilagdimi.myrh.repository.EmployerRepository;
 import com.mehdilagdimi.myrh.repository.OffreDetailsRepository;
 import com.mehdilagdimi.myrh.repository.OffreRepository;
+import com.mehdilagdimi.myrh.repository.specification.OfferSpecification;
+import com.mehdilagdimi.myrh.repository.specification.SearchCriteria;
 import jakarta.persistence.PersistenceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +21,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -41,10 +47,11 @@ public class OfferService {
     @Autowired
     OffreDetailsRepository offreDetailsRepository;
 
+
     public Page<Offer> getAllOffersPaginated(int maxItems, int requestedPage) throws EmptyResultDataAccessException{
         Pageable pageableOffres = PageRequest.of(
                 requestedPage, maxItems,
-                Sort.by("publicationDate").descending().and(Sort.by("isExpired"))
+                Sort.by("publicationDate").descending().and(Sort.by("isExpired").descending())
         );
 
         Page<Offer> offers = offreRepository.findAll(pageableOffres);
@@ -62,6 +69,32 @@ public class OfferService {
 
         if(offers.isEmpty()) throw new EmptyResultDataAccessException("List of offre records is empty", maxItems);
         return offers;
+    }
+
+    public Page<Offer> getSearchedOffers(Map<String, String> filters, int maxItems, int requestedPage){
+
+        OfferSpecification spec1 =
+                new OfferSpecification(new SearchCriteria("title", ":", filters.get("text")));
+        OfferSpecification spec2 =
+                new OfferSpecification(new SearchCriteria("ville", ":", filters.get("city")));
+        OfferSpecification spec3 =
+                new OfferSpecification(new SearchCriteria("offreType", "=", OfferType.valueOf(filters.get("contract"))));
+
+        Pageable pageableOffres = PageRequest.of(
+                requestedPage, maxItems,
+                Sort.by("publicationDate").descending().and(Sort.by("isExpired"))
+        );
+
+        Page<Offer> searchedOffers = offreRepository.searchByFilter(
+                filters.get("text"),
+                filters.get("city"),
+                OfferType.valueOf(filters.get("contract")),
+                pageableOffres);
+
+//        Page<Offer> searchedOffers = offreRepository.findAll(Specification.where(spec1), pageableOffres);
+
+//        Page<Offer> searchedOffers = offreRepository.findAll(Specification.where(spec1).and(spec2).or(spec3), pageableOffres);
+        return searchedOffers;
     }
 
     public Offer getOffreById(Long id){
