@@ -46,7 +46,6 @@ public class OffreController {
             ){
         Response response = null;
         try{
-
             Page<Offer> offers;
             if(seachFilters.size() > 0)  offers = offerService.getSearchedOffers(seachFilters, maxItems, requestedPage);
             else {
