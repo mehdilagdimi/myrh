@@ -10,11 +10,14 @@ import com.mehdilagdimi.myrh.model.SignupRequest;
 import com.mehdilagdimi.myrh.model.entity.Agent;
 import com.mehdilagdimi.myrh.model.entity.Employer;
 import com.mehdilagdimi.myrh.model.entity.User;
+import com.mehdilagdimi.myrh.service.EmailService;
 import com.mehdilagdimi.myrh.service.UserService;
 import com.mehdilagdimi.myrh.util.JwtHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,8 +27,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -34,11 +35,17 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final JwtHandler jwtHandler;
+    private final EmailService emailService;
 
-    public AuthController(@Lazy AuthenticationManager authenticationManager, UserService userService, JwtHandler jwtHandler) {
+    @Autowired
+    public SimpleMailMessage emailTemplate;
+
+
+    public AuthController(@Lazy AuthenticationManager authenticationManager, UserService userService, JwtHandler jwtHandler, EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.jwtHandler = jwtHandler;
+        this.emailService = emailService;
     }
 
     @PostMapping("/auth")
@@ -86,6 +93,9 @@ public class AuthController {
             if(signupRequest.getRole().toString().equals("ROLE_AGENT")) throw new IllegalArgumentException();
             User user = userService.addUser(signupRequest);
             String jwt = jwtHandler.generateToken(user);
+
+            String msg = String.format(emailTemplate.getText(), user.getEmail());
+            emailService.sendSimpleMessage(user.getEmail(), "myHR Account Creation", msg);
 
             response = new Response(
                     HttpStatus.CREATED,

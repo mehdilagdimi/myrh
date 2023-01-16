@@ -22,4 +22,5 @@ public interface OffreRepository extends JpaRepository<Offer, Long>, JpaSpecific
     Page<Offer> searchByFilter(String title, String ville, OfferType offreType, Pageable pageable);
 
     Page<Offer> findAllByOfferStatus(OfferStatus offerStatus, Pageable pageable);
+    Page<Offer> findAllByEmployerId(Long id, Pageable pageable);
 }

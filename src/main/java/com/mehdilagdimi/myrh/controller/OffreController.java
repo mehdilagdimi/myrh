@@ -39,20 +39,25 @@ public class OffreController {
 
     @GetMapping
     public ResponseEntity<Response> getOffers(
-            @RequestParam(defaultValue = "23") Integer maxItems,
+            Authentication authentication,
+            @RequestParam(defaultValue = "100") Integer maxItems,
             @RequestParam(defaultValue = "0") Integer requestedPage,
+            @RequestParam(name = "employer",required = false) Long employerId,
             @RequestParam(name = "status",required = false) OfferStatus status,
             @RequestParam(required = false) Map<String, String> searchFilters
             ){
         Response response = null;
         try{
 
+//            System.out.println(" id before  " + employerId);
             Page<Offer> offers = null;
-            if(searchFilters.size() > 0) {
+            if(employerId != null) {
+                offers = offerService.getAllOffersByEmployerPaginated(employerId, maxItems, requestedPage);
+            } else if(searchFilters.size() > 0) {
                 offers = offerService.getSearchedOffers(searchFilters, maxItems, requestedPage);
             } else {
-                if(status == null) offers = offerService.getAllOffersPaginated(maxItems, requestedPage);
-                else offers = offerService.getAllWaitingOffersPaginated(maxItems, requestedPage, status);
+                if(status == null) offers = offerService.getAllOffersByStatusPaginated(authentication, maxItems, requestedPage, OfferStatus.ACCEPTED);
+                else offers = offerService.getAllOffersByStatusPaginated(authentication, maxItems, requestedPage, status);
             }
 
             response = new Response(
@@ -62,7 +67,7 @@ public class OffreController {
                     offers.getContent()
             );
 
-        }catch (EmptyResultDataAccessException e){
+        }catch (EmptyResultDataAccessException | NullPointerException e){
             e.printStackTrace();
             response = new Response(HttpStatus.BAD_REQUEST, "No Result was found");
 

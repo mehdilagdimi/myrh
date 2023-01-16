@@ -68,6 +68,7 @@ public class WebSecurityConfig {
                                         "/*/signup",
                                                 "/*/auth",
                                                 "/*/offers",
+                                                "/*/payment/*",
                                                 "/*/offers/fields-options-list",
                                                 "/*/signin/**")
                                  .permitAll()

@@ -49,6 +49,7 @@ public class JwtHandler {
 
     public String generateToken(User userDetails) {
         claims.put("role", userDetails.getRole().toString());
+        claims.put("userId", userDetails.getId());
         return createToken(claims, userDetails.getEmail());
     }
 

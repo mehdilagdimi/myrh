@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -55,17 +56,38 @@ public class OfferService {
         );
 
         Page<Offer> offers = offreRepository.findAll(pageableOffres);
+//        Page<Offer> offers = offreRepository.findAllByOfferStatus(OfferStatus.ACCEPTED , pageableOffres);
 
         if(offers.isEmpty()) throw new EmptyResultDataAccessException("List of offre records is empty", maxItems);
         return offers;
     }
-    public Page<Offer> getAllWaitingOffersPaginated(int maxItems, int requestedPage, OfferStatus offerStatus) throws EmptyResultDataAccessException{
+
+    public Page<Offer> getAllOffersByEmployerPaginated(Long id, int maxItems, int requestedPage) throws EmptyResultDataAccessException{
+        Pageable pageableOffres = PageRequest.of(
+                requestedPage, maxItems,
+                Sort.by("publicationDate").descending().and(Sort.by("isExpired").descending())
+        );
+
+        Page<Offer> offers = offreRepository.findAllByEmployerId(id, pageableOffres);
+
+        if(offers.isEmpty()) throw new EmptyResultDataAccessException("List of offre records is empty", maxItems);
+        return offers;
+    }
+    public Page<Offer> getAllOffersByStatusPaginated(Authentication authentication, int maxItems, int requestedPage, OfferStatus offerStatus) throws EmptyResultDataAccessException, NullPointerException{
         Pageable pageableOffres = PageRequest.of(
                 requestedPage, maxItems,
                 Sort.by("publicationDate").descending().and(Sort.by("isExpired"))
         );
 
-        Page<Offer> offers = offreRepository.findAllByOfferStatus(offerStatus, pageableOffres);
+        Page<Offer> offers = null;
+
+        if(authentication != null){
+            if("[ROLE_AGENT]".equals(authentication.getAuthorities().toString())){
+                offers = offreRepository.findAll(pageableOffres);
+            }
+        } else {
+            offers = offreRepository.findAllByOfferStatus(offerStatus, pageableOffres);
+        }
 
         if(offers.isEmpty()) throw new EmptyResultDataAccessException("List of offre records is empty", maxItems);
         return offers;
