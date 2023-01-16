@@ -13,6 +13,7 @@ import com.mehdilagdimi.myrh.model.entity.User;
 import com.mehdilagdimi.myrh.service.EmailService;
 import com.mehdilagdimi.myrh.service.UserService;
 import com.mehdilagdimi.myrh.util.JwtHandler;
+import jakarta.mail.SendFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
