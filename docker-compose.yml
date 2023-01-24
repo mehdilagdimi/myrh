@@ -1,0 +1,22 @@
+version: "1.0"
+services:
+  db:
+    container_name: app-db
+    image: "postgres:14.2"
+    environment:
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=myrh
+    restart: always
+    ports:
+      - "5432:5432"
+
+  api:
+    build:
+      context: .
+      args:
+        - SPRING_PROFILE=dev
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+
