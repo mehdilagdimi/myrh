@@ -65,21 +65,25 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers(
-                                        "/*/signup",
+                                        "/*/oauth/*",
+                                                "/*/signup",
                                                 "/*/auth",
                                                 "/*/offers",
                                                 "/*/payment/*",
-                                                "/*/offers/fields-options-list",
-                                                "/*/signin/**")
+                                                "/*/offers/fields-options-list"
+                                                )
                                  .permitAll()
                                 .anyRequest().authenticated()
                 )
+                .oauth2Login()
+                    .defaultSuccessUrl("/api/loginSuccess")
+                    .failureUrl("/api/loginFailure")
+                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-//                .oauth2Login()
         ;
         return http.build();
     }
@@ -103,8 +107,14 @@ public class WebSecurityConfig {
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("https://myhr.herokuapp.com","http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+        configuration.setAllowedMethods(Arrays.asList("POST","GET", "PUT", "HEAD"));
+//        configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+//        configuration.setAllowedHeaders(List.of(
+//                "Authorization", "Content-Type", "Origin", "X-Requested-With", "Accept", "Key", "credential", "X-XSRF-TOKEN"
+//                )
+//        );
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

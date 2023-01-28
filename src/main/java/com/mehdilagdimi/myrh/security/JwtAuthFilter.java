@@ -62,7 +62,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
             User userDetails = (User)userService.loadUserByUsername(userEmail);
             if(userDetails != null){
-                try{
+//                try{
                     isTokenValid = jwtHandler.validateToken(token, userDetails);
                     if(isTokenValid) {
                         UsernamePasswordAuthenticationToken authenticationToken =
@@ -71,17 +71,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     }
-                }catch (ExpiredJwtException e){
-//                    e.printStackTrace();
-                    System.out.println(" inside jwt except");
-                    Response responseModel = new Response(HttpStatus.UNAUTHORIZED, "JWT Expired");
-//                    ResponseEntity<Response> responseToSend = new ResponseEntity<>(responseModel, HttpStatusCode.valueOf(response.getStatus()));
-
-                    response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    mapper.writeValue(response.getWriter(), responseModel);
-                    return;
-                }
+//                }catch (ExpiredJwtException e){
+////                    e.printStackTrace();
+//                    System.out.println(" inside jwt except");
+//                    Response responseModel = new Response(HttpStatus.UNAUTHORIZED, "JWT Expired");
+////                    ResponseEntity<Response> responseToSend = new ResponseEntity<>(responseModel, HttpStatusCode.valueOf(response.getStatus()));
+//
+//                    response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+//                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                    mapper.writeValue(response.getWriter(), responseModel);
+//                    return;
+//                }
             }
 
         }

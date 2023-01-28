@@ -1,15 +1,10 @@
 package com.mehdilagdimi.myrh.service;
 
+import com.mehdilagdimi.myrh.base.enums.UserRole;
 import com.mehdilagdimi.myrh.base.exception.UserAlreadyExistAuthenticationException;
 import com.mehdilagdimi.myrh.model.SignupRequest;
-import com.mehdilagdimi.myrh.model.entity.Agent;
-import com.mehdilagdimi.myrh.model.entity.Employer;
-import com.mehdilagdimi.myrh.model.entity.User;
-import com.mehdilagdimi.myrh.model.entity.Visitor;
-import com.mehdilagdimi.myrh.repository.AgentRepository;
-import com.mehdilagdimi.myrh.repository.EmployerRepository;
-import com.mehdilagdimi.myrh.repository.UserRepository;
-import com.mehdilagdimi.myrh.repository.VisitorRepository;
+import com.mehdilagdimi.myrh.model.entity.*;
+import com.mehdilagdimi.myrh.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,6 +19,8 @@ public class UserService implements UserDetailsService{
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    OauthUserRepository oauthUserRepository;
     @Autowired
     EmployerRepository employerRepository;
     @Autowired
@@ -59,6 +56,19 @@ public class UserService implements UserDetailsService{
                 break;
         }
         return user;
+    }
+
+    public OauthUser addOauthUser(String userId, String email, String name, UserRole role) throws UserAlreadyExistAuthenticationException {
+        return oauthUserRepository.save(
+                new OauthUser(userId, email, name,role)
+        );
+    }
+
+    public boolean verifyIsOauthAccount(String email, String userId) throws UserAlreadyExistAuthenticationException{
+        if(oauthUserRepository.findByOauthUserId(userId).isPresent()) return true;
+        if(userRepository.findByEmail(email).isPresent())
+            throw new UserAlreadyExistAuthenticationException("User already exist");
+        return false;
     }
 
 

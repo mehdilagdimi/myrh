@@ -11,4 +11,5 @@ import lombok.Setter;
 public class AuthenticationRequest {
     private final String password;
     private final String email;
+    private final String idToken;
 }

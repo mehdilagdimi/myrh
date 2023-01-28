@@ -48,6 +48,11 @@ public class User implements UserDetails {
     @PrimaryKeyJoinColumn
     ProfileImage image;
 
+    @OneToOne(mappedBy = "user")
+    @PrimaryKeyJoinColumn
+    private OauthUser oauthUser;
+
+
     @JsonIgnore
     @Transient
     private List<SimpleGrantedAuthority> grantedAuthorityList;
@@ -173,5 +178,13 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public OauthUser getOauthUser() {
+        return oauthUser;
+    }
+
+    public void setOauthUser(OauthUser oauthUser) {
+        this.oauthUser = oauthUser;
     }
 }
