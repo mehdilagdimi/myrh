@@ -58,19 +58,6 @@ public class UserService implements UserDetailsService{
         return user;
     }
 
-    public OauthUser addOauthUser(String userId, String email, String name, UserRole role) throws UserAlreadyExistAuthenticationException {
-        return oauthUserRepository.save(
-                new OauthUser(userId, email, name,role)
-        );
-    }
-
-    public boolean verifyIsOauthAccount(String email, String userId) throws UserAlreadyExistAuthenticationException{
-        if(oauthUserRepository.findByOauthUserId(userId).isPresent()) return true;
-        if(userRepository.findByEmail(email).isPresent())
-            throw new UserAlreadyExistAuthenticationException("User already exist");
-        return false;
-    }
-
 
     public User getUser(Long id){
         return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException());

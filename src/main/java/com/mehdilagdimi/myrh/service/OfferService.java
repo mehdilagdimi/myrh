@@ -81,10 +81,8 @@ public class OfferService {
 
         Page<Offer> offers = null;
 
-        if(authentication != null){
-            if("[ROLE_AGENT]".equals(authentication.getAuthorities().toString())){
-                offers = offreRepository.findAll(pageableOffres);
-            }
+        if(authentication != null && "[ROLE_AGENT]".equals(authentication.getAuthorities().toString())){
+            offers = offreRepository.findAll(pageableOffres);
         } else {
             offers = offreRepository.findAllByOfferStatus(offerStatus, pageableOffres);
         }

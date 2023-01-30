@@ -6,6 +6,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.mehdilagdimi.myrh.base.enums.OauthProvider;
 import com.mehdilagdimi.myrh.base.enums.UserRole;
 import com.mehdilagdimi.myrh.base.exception.UserAlreadyExistAuthenticationException;
 import com.mehdilagdimi.myrh.model.AuthenticationRequest;
@@ -15,6 +16,7 @@ import com.mehdilagdimi.myrh.model.entity.Agent;
 import com.mehdilagdimi.myrh.model.entity.Employer;
 import com.mehdilagdimi.myrh.model.entity.User;
 import com.mehdilagdimi.myrh.service.EmailService;
+import com.mehdilagdimi.myrh.service.OauthService;
 import com.mehdilagdimi.myrh.service.UserService;
 import com.mehdilagdimi.myrh.util.JwtHandler;
 import jakarta.mail.SendFailedException;
@@ -29,12 +31,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -47,6 +44,9 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class AuthController {
 
+    @Autowired
+    private OauthService oauthService;
+
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final JwtHandler jwtHandler;
@@ -56,7 +56,6 @@ public class AuthController {
     public SimpleMailMessage emailTemplate;
 
 
-    private String CLIENT_ID = "81862977324-aehpi5f820aevtjmcdscj657eqiameos.apps.googleusercontent.com";
 
 
     public AuthController(@Lazy AuthenticationManager authenticationManager, UserService userService, JwtHandler jwtHandler, EmailService emailService) {
@@ -69,14 +68,15 @@ public class AuthController {
     @PostMapping("/auth")
     public ResponseEntity<Response> authenticate(
             @RequestBody AuthenticationRequest authRequest,
-            @RequestParam(name = "oauth", required = false) Optional<Boolean> isOauth
-            ) {
+            @RequestParam(name = "oauth", required = false) Optional<Boolean> isOauth,
+            @RequestParam(name = "provider", required = false) OauthProvider provider
+    ) {
         Response response = null;
         try{
             System.out.println(" is oath " + isOauth);
             User user;
             if(isOauth.orElse(false)) {
-               String oauthEmail = oauthAuthenticate(authRequest.getIdToken());
+               String oauthEmail = oauthAuthenticate(provider, authRequest.getIdToken(), authRequest.getRole());
                user = (User) userService.loadUserByUsername(oauthEmail);
             } else {
                 authenticationManager.authenticate(
@@ -149,52 +149,16 @@ public class AuthController {
     }
 
 
-    public String oauthAuthenticate(String idTokenString) throws IOException, GeneralSecurityException, UserAlreadyExistAuthenticationException {
-        System.out.println(" client id " + CLIENT_ID);
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-                // Specify the CLIENT_ID of the app that accesses the backend:
-                .setAudience(Collections.singletonList(CLIENT_ID))
-                // Or, if multiple clients access the backend:
-                //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
-                .build();
-
-        // (Receive idTokenString by HTTPS POST)
-
-        GoogleIdToken idToken = verifier.verify(idTokenString);
-        if (idToken != null) {
-            GoogleIdToken.Payload payload = idToken.getPayload();
-
-            // Print user identifier
-            String userId = payload.getSubject();
-            System.out.println("User ID: " + userId);
-
-            // Get profile information from payload
-            String email = payload.getEmail();
-            boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
-            String name = (String) payload.get("name");
-            String pictureUrl = (String) payload.get("picture");
-            String locale = (String) payload.get("locale");
-            String familyName = (String) payload.get("family_name");
-            String givenName = (String) payload.get("given_name");
-
-            // Use or store profile information
-            // ...
-            System.out.println(" name " + name);
-
-            if(!userService.verifyIsOauthAccount(email, userId)){
-                Optional<UserRole> role = Optional.of(UserRole.ROLE_GOOGLE_VISITOR);
-                userService.addOauthUser(userId, email, name, role.orElse(UserRole.ROLE_EMPLOYER));
+    public String oauthAuthenticate(OauthProvider provider, String idTokenString, UserRole role) throws IOException, GeneralSecurityException, UserAlreadyExistAuthenticationException {
+        String email = null;
+        switch (provider){
+            case GOOGLE -> {
+                email = oauthService.googleOauth(idTokenString, role);
             }
-
-            return email;
-        } else {
-            System.out.println("Invalid ID token.");
+            case FACEBOOK -> oauthService.facebookOauth(idTokenString, role);
         }
-
-        return null;
+        return email;
     }
-//    @Autowired
-//    private OAuth2AuthorizedClientService authorizedClientService;
 //
 //    @GetMapping("/loginSuccess")
 //    public void getLoginInfo(OAuth2AuthenticationToken authentication) {
