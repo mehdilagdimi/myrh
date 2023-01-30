@@ -61,25 +61,19 @@
 			<groupId>org.springframework.social</groupId>
 			<artifactId>spring-social-facebook</artifactId>
 			<version>2.0.3.RELEASE</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.social</groupId>
-					<artifactId>spring-social-core</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents.client5</groupId>
-			<artifactId>httpclient5</artifactId>
-			<version>5.0</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.apache.httpcomponents.client5</groupId>-->
+<!--			<artifactId>httpclient5</artifactId>-->
+<!--			<version>5.0</version>-->
+<!--		</dependency>-->
 
-		<!-- https://mvnrepository.com/artifact/org.springframework.social/spring-social-core -->
-		<dependency>
-			<groupId>org.springframework.social</groupId>
-			<artifactId>spring-social-core</artifactId>
-			<version>1.1.2.RELEASE</version>
-		</dependency>
+<!--		&lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.social/spring-social-core &ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.social</groupId>-->
+<!--			<artifactId>spring-social-core</artifactId>-->
+<!--			<version>1.1.2.RELEASE</version>-->
+<!--		</dependency>-->
 
 
 
