@@ -40,7 +40,7 @@ public class OffreController {
     @GetMapping
     public ResponseEntity<Response> getOffers(
             Authentication authentication,
-            @RequestParam(defaultValue = "100") Integer maxItems,
+            @RequestParam(defaultValue = "6") Integer maxItems,
             @RequestParam(defaultValue = "0") Integer requestedPage,
             @RequestParam(name = "employer",required = false) Long employerId,
             @RequestParam(name = "status",required = false) OfferStatus status,
@@ -60,13 +60,15 @@ public class OffreController {
                 else offers = offerService.getAllOffersByStatusPaginated(authentication, maxItems, requestedPage, status);
             }
 
+
             response = new Response(
                     HttpStatus.OK,
-                    "Successfully Retrieved Offers Page" + requestedPage,
-                    "data",
-                    offers.getContent()
+                    "Successfully Retrieved Offers Page" + requestedPage
             );
 
+            response.addData("data", offers.getContent());
+            response.addData("totalPages", offers.getTotalPages());
+            System.out.println(" size of " + offers.getTotalElements());
         }catch (EmptyResultDataAccessException | NullPointerException e){
             e.printStackTrace();
             response = new Response(HttpStatus.BAD_REQUEST, "No Result was found");

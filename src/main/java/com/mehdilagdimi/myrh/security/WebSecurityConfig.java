@@ -1,8 +1,6 @@
 package com.mehdilagdimi.myrh.security;
 
 import com.mehdilagdimi.myrh.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -33,19 +31,6 @@ import java.util.List;
         securedEnabled = true,
         jsr250Enabled = true)
 public class WebSecurityConfig {
-//
-//    @Autowired
-//    private FacebookConnectionSignup facebookConnectionSignup;
-
-//    @Value("${spring.social.facebook.appSecret}")
-//    @Value("${security.oauth2.client.registration.facebook.clientId}")
-//    String appSecret;
-//
-////    @Value("${spring.social.facebook.appId}")
-//    @Value("${security.oauth2.client.registration.facebook.clientSecret}")
-//    String appId;
-
-
     private final UserService userService;
     private final JwtAuthFilter jwtAuthFilter;
     private final PasswordEncoder passwordEncoder;
@@ -66,6 +51,7 @@ public class WebSecurityConfig {
                         authorize -> authorize
                                 .requestMatchers(
                                         "/*/oauth/*",
+                                                "/*/login/*",
                                                 "/*/signup",
                                                 "/*/auth",
                                                 "/*/offers",
@@ -75,15 +61,12 @@ public class WebSecurityConfig {
                                  .permitAll()
                                 .anyRequest().authenticated()
                 )
-                .oauth2Login()
-                    .defaultSuccessUrl("/api/loginSuccess")
-                    .failureUrl("/api/loginFailure")
-                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login()
         ;
         return http.build();
     }

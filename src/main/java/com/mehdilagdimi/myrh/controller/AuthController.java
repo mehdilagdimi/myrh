@@ -32,6 +32,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -55,7 +58,8 @@ public class AuthController {
     @Autowired
     public SimpleMailMessage emailTemplate;
 
-
+    @Autowired
+    private OAuth2AuthorizedClientService authorizedClientService;
 
 
     public AuthController(@Lazy AuthenticationManager authenticationManager, UserService userService, JwtHandler jwtHandler, EmailService emailService) {
@@ -159,20 +163,20 @@ public class AuthController {
         }
         return email;
     }
-//
-//    @GetMapping("/loginSuccess")
-//    public void getLoginInfo(OAuth2AuthenticationToken authentication) {
-//        OAuth2AuthorizedClient client = authorizedClientService
-//                .loadAuthorizedClient(
-//                        authentication.getAuthorizedClientRegistrationId(),
-//                        authentication.getName());
-//        System.out.println(" name " + client.getPrincipalName());
-////        return;
-//    }
-//
-//    @GetMapping("/loginFailure")
-//    public void getLoginInfo() {
-//
-//        System.out.println(" failed login oauth ");
-//    }
+
+    @RequestMapping("/loginSuccess")
+    public void getLoginInfo(OAuth2AuthenticationToken authentication) {
+        OAuth2AuthorizedClient client = authorizedClientService
+                .loadAuthorizedClient(
+                        authentication.getAuthorizedClientRegistrationId(),
+                        authentication.getName());
+        System.out.println(" name " + client.getPrincipalName());
+//        return;
+    }
+
+    @RequestMapping("/loginFailure")
+    public void getLoginInfo() {
+
+        System.out.println(" failed login oauth ");
+    }
 }
